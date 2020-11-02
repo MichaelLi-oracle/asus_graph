@@ -1,0 +1,64 @@
+CREATE PROPERTY GRAPH hr_rdbms
+  VERTEX TABLES (
+    hr.employees LABEL employee
+      PROPERTIES ARE ALL COLUMNS EXCEPT ( job_id, manager_id, department_id ),
+    hr.departments LABEL department
+      PROPERTIES ( department_id, department_name ),
+    hr.jobs LABEL job
+      PROPERTIES ARE ALL COLUMNS,
+    hr.job_history
+      PROPERTIES ( start_date, end_date ),
+    hr.locations LABEL location
+      PROPERTIES ARE ALL COLUMNS EXCEPT ( country_id ),
+    hr.countries LABEL country
+      PROPERTIES ARE ALL COLUMNS EXCEPT ( region_id ),
+    hr.regions LABEL region
+  )
+  EDGE TABLES (
+    hr.employees AS works_for
+      SOURCE employees
+      DESTINATION KEY ( manager_id ) REFERENCES employees
+      NO PROPERTIES,
+    hr.employees AS works_at
+      SOURCE employees
+      DESTINATION departments
+      NO PROPERTIES,
+    hr.employees AS works_as
+      SOURCE employees
+      DESTINATION jobs
+      NO PROPERTIES,
+    hr.departments AS managed_by
+      SOURCE departments
+      DESTINATION employees
+      NO PROPERTIES,
+    hr.job_history AS for_employee
+      SOURCE job_history
+      DESTINATION employees
+      LABEL for
+      NO PROPERTIES,
+    hr.job_history AS for_department
+      SOURCE job_history
+      DESTINATION departments
+      LABEL for
+      NO PROPERTIES,
+    hr.job_history AS for_job
+      SOURCE job_history
+      DESTINATION jobs
+      LABEL for
+      NO PROPERTIES,
+    hr.departments AS department_located_in
+      SOURCE departments
+      DESTINATION locations
+      LABEL located_in
+      NO PROPERTIES,
+    hr.locations AS location_located_in
+      SOURCE locations
+      DESTINATION countries
+      LABEL located_in
+      NO PROPERTIES,
+    hr.countries AS country_located_in
+      SOURCE countries
+      DESTINATION regions
+      LABEL located_in
+      NO PROPERTIES
+  );
